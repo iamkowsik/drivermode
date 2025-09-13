@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SVC Track – Driver</title>
+  <style>
+    :root {
+      --brand: #6366f1;
+      --brand-hover: #4f46e5;
+      --success: #10b981;
+      --success-hover: #059669;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --bg: #0a0a0a;
+      --bg-card: #111111;
+      --bg-input: #1a1a1a;
+      --text-primary: #ffffff;
+      --text-secondary: #a1a1aa;
+      --text-muted: #71717a;
+      --border: #27272a;
+      --border-focus: #3f3f46;
+    }
+    
+    * { 
+      box-sizing: border-box; 
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, var(--bg) 0%, #0f0f0f 50%, var(--bg) 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: var(--text-primary);
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 440px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, var(--brand), #8b5cf6);
+      padding: 24px;
+      text-align: center;
+      position: relative;
+    }
+    
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .header-content {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .logo {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+    
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: white;
+    }
+    
+    .header p {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .form-section {
+      padding: 32px 24px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+    
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 16px;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    
+    input::placeholder {
+      color: var(--text-muted);
+    }
+    
+    .button-container {
+      margin-top: 28px;
+    }
+    
+    button {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .btn-start {
+      background: linear-gradient(135deg, var(--success), #22c55e);
+      color: white;
+    }
+    
+    .btn-start:hover:not(:disabled) {
+      background: linear-gradient(135deg, var(--success-hover), #16a34a);
+      transform: translateY(-1px);
+    }
+    
+    .btn-stop {
+      background: linear-gradient(135deg, var(--error), #dc2626);
+      color: white;
+    }
+    
+    .btn-stop:hover {
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      transform: translateY(-1px);
+    }
+    
+    button:disabled {
+      background: var(--border);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .status-section {
+      margin-top: 24px;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      text-align: center;
+      font-weight: 500;
+    }
+    
+    .status-idle {
+      background: rgba(113, 113, 122, 0.1);
+      color: var(--text-secondary);
+    }
+    
+    .status-active {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+      border-color: rgba(16, 185, 129, 0.3);
+      animation: pulse 2s infinite;
+    }
+    
+    .status-error {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--error);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    
+    .metrics {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    
+    .metric-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    
+    .metric-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    
+    .metric-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      font-family: 'Courier New', monospace;
+    }
+    
+    .footer {
+      padding: 20px 24px;
+      background: rgba(255, 255, 255, 0.02);
+      border-top: 1px solid var(--border);
+    }
+    
+    .footer-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    
+    .security-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+    
+    .security-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: white;
+    }
+    
+    .secure { background: var(--success); }
+    .insecure { background: var(--warning); }
+    
+    @media (max-width: 480px) {
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      
+      .container {
+        margin: 10px;
+      }
+      
+      .footer-info {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-content">
+        <div class="logo">🚌</div>
+        <h1>SVC Track</h1>
+        <p>Professional Bus Tracking System</p>
+      </div>
+    </div>
+    
+    <div class="form-section">
+      <div class="form-group">
+        <label for="busName">Bus Identifier</label>
+        <input 
+          id="busName" 
+          type="text" 
+          placeholder="Enter unique bus name (e.g., Bus1, Route-A)" 
+          autocomplete="off"
+        />
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="busNumber">Vehicle Number</label>
+          <input 
+            id="busNumber" 
+            type="text" 
+            placeholder="TN-38-AB-1234" 
+            autocomplete="off"
+          />
+        </div>
+        <div class="form-group">
+          <label for="busRoute">Route Description</label>
+          <input 
+            id="busRoute" 
+            type="text" 
+            placeholder="Campus → Downtown" 
+            autocomplete="off"
+          />
+        </div>
+      </div>
+      
+      <div class="button-container">
+        <button id="actionBtn" class="btn-start">
+          <span>🟢</span>
+          <span id="btnText">Start Location Sharing</span>
+        </button>
+      </div>
+      
+      <div id="statusSection" class="status-section status-idle">
+        <div id="statusText">Ready to begin location sharing</div>
+      </div>
+      
+      <div class="metrics">
+        <div class="metric-card">
+          <div class="metric-label">Latitude</div>
+          <div class="metric-value" id="latDisplay">—</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Longitude</div>
+          <div class="metric-value" id="lngDisplay">—</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <div class="footer-info">
+        <span>Keep app active for optimal tracking</span>
+        <div class="security-badge">
+          <div class="security-icon" id="securityIcon">?</div>
+          <span id="securityText">Checking...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getDatabase, ref, set, update } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
+
+    // Your Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDwrAA2x4M0vW7VlPqjfCm4e7VFN5UlGSY",
+      authDomain: "svc-track.firebaseapp.com",
+      databaseURL: "https://svc-track-default-rtdb.firebaseio.com",
+      projectId: "svc-track",
+      storageBucket: "svc-track.firebasestorage.app",
+      messagingSenderId: "705367553123",
+      appId: "1:705367553123:web:d1b3234ad9b4b1ded0f456",
+      measurementId: "G-KQBE1S132E"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // DOM elements
+    const busNameEl = document.getElementById('busName');
+    const busNumberEl = document.getElementById('busNumber');
+    const busRouteEl = document.getElementById('busRoute');
+    const actionBtn = document.getElementById('actionBtn');
+    const btnText = document.getElementById('btnText');
+    const statusSection = document.getElementById('statusSection');
+    const statusText = document.getElementById('statusText');
+    const latDisplay = document.getElementById('latDisplay');
+    const lngDisplay = document.getElementById('lngDisplay');
+    const securityIcon = document.getElementById('securityIcon');
+    const securityText = document.getElementById('securityText');
+
+    let watchId = null;
+    let isSharing = false;
+    let updateCount = 0;
+
+    // Security check
+    const isSecure = window.isSecureContext || location.hostname === 'localhost';
+    securityIcon.textContent = isSecure ? '✓' : '⚠';
+    securityIcon.className = 'security-icon ' + (isSecure ? 'secure' : 'insecure');
+    securityText.textContent = isSecure ? 'Secure' : 'Insecure';
+
+    function updateStatus(message, type = 'idle') {
+      statusText.textContent = message;
+      statusSection.className = `status-section status-${type}`;
+    }
+
+    function updateCoordinates(lat, lng) {
+      latDisplay.textContent = lat.toFixed(6);
+      lngDisplay.textContent = lng.toFixed(6);
+    }
+
+    async function saveBusMetadata(busName, busNumber, busRoute) {
+      if (!busNumber && !busRoute) return;
+      try {
+        await update(ref(db, 'bus_info/' + busName), {
+          number: busNumber || null,
+          route: busRoute || null,
+          startedAt: Date.now()
+        });
+      } catch (error) {
+        console.warn('Metadata save failed:', error);
+      }
+    }
+
+    function startSharing() {
+      const busName = busNameEl.value.trim();
+      const busNumber = busNumberEl.value.trim();
+      const busRoute = busRouteEl.value.trim();
+
+      if (!busName) {
+        alert("Please enter a bus identifier");
+        busNameEl.focus();
+        return;
+      }
+
+      if (!navigator.geolocation) {
+        alert("Geolocation not supported");
+        return;
+      }
+
+      if (!isSecure) {
+        alert("HTTPS required for precise location");
+        return;
+      }
+
+      isSharing = true;
+      updateCount = 0;
+
+      // Save metadata
+      saveBusMetadata(busName, busNumber, busRoute);
+
+      // Update UI
+      actionBtn.className = 'btn-stop';
+      btnText.textContent = 'Stop Sharing';
+      actionBtn.querySelector('span').textContent = '🔴';
+      busNameEl.disabled = true;
+      busNumberEl.disabled = true;
+      busRouteEl.disabled = true;
+
+      updateStatus("Acquiring location...", "active");
+
+      // Start geolocation (your exact working code)
+      watchId = navigator.geolocation.watchPosition((pos) => {
+        const { latitude, longitude } = pos.coords;
+        const ts = Date.now();
+
+        // Firebase update (unchanged from your working code)
+        set(ref(db, 'bus_locations/' + busName), {
+          lat: latitude,
+          lng: longitude,
+          timestamp: ts
+        }).then(() => {
+          updateCount++;
+          updateStatus(`Location sharing active • Updates: ${updateCount}`, "active");
+          updateCoordinates(latitude, longitude);
+        }).catch((error) => {
+          updateStatus("Update failed: " + error.message, "error");
+        });
+
+      }, (err) => {
+        console.error(err);
+        updateStatus("Location error: " + err.message, "error");
+      }, {
+        enableHighAccuracy: true,
+        maximumAge: 0
+      });
+    }
+
+    function stopSharing() {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+      }
+
+      isSharing = false;
+
+      // Reset UI
+      actionBtn.className = 'btn-start';
+      btnText.textContent = 'Start Location Sharing';
+      actionBtn.querySelector('span').textContent = '🟢';
+      busNameEl.disabled = false;
+      busNumberEl.disabled = false;
+      busRouteEl.disabled = false;
+
+      updateStatus("Location sharing stopped", "idle");
+      latDisplay.textContent = "—";
+      lngDisplay.textContent = "—";
+    }
+
+    // Button click handler
+    actionBtn.addEventListener('click', () => {
+      if (isSharing) {
+        stopSharing();
+      } else {
+        startSharing();
+      }
+    });
+
+    // Enter key support
+    [busNameEl, busNumberEl, busRouteEl].forEach(input => {
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !isSharing) {
+          startSharing();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
